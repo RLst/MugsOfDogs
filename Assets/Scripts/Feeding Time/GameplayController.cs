@@ -4,127 +4,135 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class GameplayController : MonoBehaviour
+namespace MugsOfDogs.Controllers
 {
-    public static GameplayController instance;
+	public class GameplayController : MonoBehaviour
+	{
+        //Singleton
+		public static GameplayController instance;
 
-    public TreatSpawner treat_Spawner;
+        //Inspector
+		[HideInInspector]
+		public FeedingTimeScript currentTreat;
 
-    [HideInInspector]
-    public FeedingTimeScript currentTreat;
+		public GameObject GameOverScreen, ExtraChanceButton;
+		public AudioSource DestroySoundEffect;
+		public Animator anim;
 
-    public GameObject GameOverScreen, ExtraChanceButton;
-    public AudioSource DestroySoundEffect;
-    public Animator anim;
+		//Members
+		TreatDropper treatSpawner = null;
 
-    private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-    }
+		void Awake()
+		{
+			if (instance == null)
+				instance = this;
 
-    void Start()
-    {
-        treat_Spawner.SpawnTreat();
+			treatSpawner = FindObjectOfType<TreatDropper>();
+		}
 
-        //anim = GetComponent<Animator>();
+		void Start()
+		{
+			treatSpawner.SpawnTreat();
 
-        m_Raycaster = mainCanvas.GetComponent<GraphicRaycaster>();
-        m_EventSystem = mainCanvas.GetComponent<EventSystem>();
-    }
+			//anim = GetComponent<Animator>();
 
-    void Update()
-    {
-        if (ClickedElemenetUI())
-            return;
+			m_Raycaster = mainCanvas.GetComponent<GraphicRaycaster>();
+			m_EventSystem = mainCanvas.GetComponent<EventSystem>();
+		}
 
-        DetectInput();
-    }
+		void Update()
+		{
+			if (ClickedElemenetUI())
+				return;
 
-    public void DetectInput()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            currentTreat.DropTreat();
-        }
-    }
+			DetectInput();
+		}
 
-    public void SpawnNewTreat()
-    {
-        Invoke("NewTreat", 0.3f);
-    }
+		public void DetectInput()
+		{
+			if (Input.GetMouseButtonDown(0))
+			{
+				currentTreat.DropTreat();
+			}
+		}
 
-    void NewTreat()
-    {
-        treat_Spawner.SpawnTreat();
-    }
+		public void SpawnNewTreat()
+		{
+			Invoke("NewTreat", 0.3f);
+		}
 
-    public void PlaySound()
-    {
-        DestroySoundEffect.Play();
-    }
+		void NewTreat()
+		{
+			treatSpawner.SpawnTreat();
+		}
 
-    public void PlayAnimation()
-    {
-        anim.SetTrigger("EatingAnimation");
-    }
+		public void PlaySound()
+		{
+			DestroySoundEffect.Play();
+		}
 
-    public void EndGame()
-    {
-        GameOverScreen.SetActive(true);
-        //WalletScript.walletValue += 5;  // Add treats to the wallet here after getting at least 1 star.
-        Time.timeScale = 0;
+		public void PlayAnimation()
+		{
+			anim.SetTrigger("EatingAnimation");
+		}
 
-        /*
-        // Not yet tested
+		public void EndGame()
+		{
+			GameOverScreen.SetActive(true);
+			//WalletScript.walletValue += 5;  // Add treats to the wallet here after getting at least 1 star.
+			Time.timeScale = 0;
 
-        if (Score.scoreValue > 15)
-        {
-            // Save 1 star
-            // Add 5 Treats
-        }
+			/*
+			// Not yet tested
 
-        if (Score.scoreValue > 20)
-        {
-            // Save 2 stars
-            // Add 7 Treats
-        }
+			if (Score.scoreValue > 15)
+			{
+				// Save 1 star
+				// Add 5 Treats
+			}
 
-        if (Score.scoreValue > 25)
-        {
-            // Save 3 stars
-            // Add 10 Treats
-        }
-        */
-    }
+			if (Score.scoreValue > 20)
+			{
+				// Save 2 stars
+				// Add 7 Treats
+			}
 
-    // Add Rewared Ad to get a extra chance
-    public void ExtraChance()
-    {
-        GameOverScreen.SetActive(false);
-        ExtraChanceButton.SetActive(false); // When you ask for a Extra Chance, this disable the "Extra Chance" button
-        Time.timeScale = 1;
-    }
+			if (Score.scoreValue > 25)
+			{
+				// Save 3 stars
+				// Add 10 Treats
+			}
+			*/
+		}
 
-    public void RestartGame()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-    }
+		// Add Rewared Ad to get a extra chance
+		public void ExtraChance()
+		{
+			GameOverScreen.SetActive(false);
+			ExtraChanceButton.SetActive(false); // When you ask for a Extra Chance, this disable the "Extra Chance" button
+			Time.timeScale = 1;
+		}
 
-    // This code is to avoid dropping the Treat while hiting the pause button (is there anything better?)
-    // This should work buy itself, but I had to add a box collider in the screen where you can tap it, that's why it needs a better solution
-    public GameObject mainCanvas;
-    GraphicRaycaster m_Raycaster;
-    PointerEventData m_PointerEventData;
-    EventSystem m_EventSystem;
+		public void RestartGame()
+		{
+			UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+		}
 
-    bool ClickedElemenetUI()
-    {
-        m_PointerEventData = new PointerEventData(m_EventSystem);
-        m_PointerEventData.position = Input.mousePosition;
-        m_PointerEventData.position = Input.mousePosition;
-        List<RaycastResult> results = new List<RaycastResult>();
-        m_Raycaster.Raycast(m_PointerEventData, results);
-        return (results.Count > 0);
-    }
+		// This code is to avoid dropping the Treat while hiting the pause button (is there anything better?)
+		// This should work buy itself, but I had to add a box collider in the screen where you can tap it, that's why it needs a better solution
+		public GameObject mainCanvas;
+		GraphicRaycaster m_Raycaster;
+		PointerEventData m_PointerEventData;
+		EventSystem m_EventSystem;
+
+		bool ClickedElemenetUI()
+		{
+			m_PointerEventData = new PointerEventData(m_EventSystem);
+			m_PointerEventData.position = Input.mousePosition;
+			m_PointerEventData.position = Input.mousePosition;
+			List<RaycastResult> results = new List<RaycastResult>();
+			m_Raycaster.Raycast(m_PointerEventData, results);
+			return (results.Count > 0);
+		}
+	}
 }

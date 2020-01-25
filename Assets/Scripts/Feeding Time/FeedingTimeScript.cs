@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using MugsOfDogs.Controllers;
 
 public class FeedingTimeScript : MonoBehaviour
 {
@@ -71,7 +72,7 @@ public class FeedingTimeScript : MonoBehaviour
     {
         GameplayController.instance.SpawnNewTreat();
     }
-   
+
     private void OnTriggerEnter2D(Collider2D target)
     {
         if (target.tag == "Bowl")
@@ -90,6 +91,6 @@ public class FeedingTimeScript : MonoBehaviour
             GameplayController.instance.SpawnNewTreat();
             //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             //Score.scoreValue = 0;
-        }           
+        }
     }
 }
