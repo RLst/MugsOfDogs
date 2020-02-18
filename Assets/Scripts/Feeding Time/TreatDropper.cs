@@ -63,6 +63,11 @@ public class TreatDropper : MonoBehaviour
     void Update()
     {
         UpdateDropperPosition();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SpawnTreat();
+        }
     }
 
     void UpdateDropperPosition()
@@ -76,6 +81,6 @@ public class TreatDropper : MonoBehaviour
 
     public void SpawnTreat()
     {
-        Instantiate(treat, transform.position, transform.rotation);
+        Instantiate(treat, dropper.transform.position, dropper.transform.rotation);
     }
 }
